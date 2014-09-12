@@ -24,7 +24,8 @@ few extra requirements in terms of Vagrant plugins.
 
 ## Configuration
 
-You can tweak your deployed environment by modifying `settings.yml`
+You will need to provide a `settings.yml` file to tweak your
+configuration. An example with sane defaults is provided as `settings.yml.example`.
 
 ```yaml
 ---
