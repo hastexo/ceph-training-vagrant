@@ -71,6 +71,8 @@
       shell: >
         yum-config-manager --add-repo http://{{ item }}
       with_items:
+        - "download.fedoraproject.org/pub/epel/{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
+        - "ceph.com/packages/ceph-deploy/rpm/el6/RPMS"
         - "ceph.com/rpm-{{ ceph_release }}/rhel{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
     - name: Install packages
       yum: >
@@ -78,5 +80,5 @@
         state=present
       with_items:
         - ntp
-        - ceph
-
+#        - ceph
+#        - ceph-deploy
