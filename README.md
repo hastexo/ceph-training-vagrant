@@ -78,3 +78,26 @@ or
 If you only want to bring up a single box or a few, you can do so with
 
 * `vagrant up [--provider=libvirt] {alice|bob|charlie|daisy|eric|frank}`
+
+
+## Parallel provisioning
+
+Normally, Vagrant provisions hosts in sequence. In contrast, to take
+advantage of parallelism using the Ansible provisioner, this
+Vagrantfile uses `alice` as the provisioning node, using the pattern
+explained
+[here](https://docs.vagrantup.com/v2/provisioning/ansible.html).
+
+Thus, if you just issue
+
+	vagrant up [--provider=libvirt]
+
+Then `alice` is spun up last and subsequently takes care of
+provisioning in parallel. If, however, you deploy *individual* nodes,
+you'll have to reprovision from `alice` to make sure they are
+configured correctly, like so:
+
+1. `vagrant up [--provider=libvirt] alice`
+2. `vagrant up [--provider=libvirt] bob`
+3. `vagrant up [--provider=libvirt] frank`
+4. `vagrant provision alice`

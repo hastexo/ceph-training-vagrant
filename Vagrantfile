@@ -56,13 +56,6 @@ Vagrant.configure("2") do |config|
     domain.storage :file, :size => '20G'
   end
 
-  config.vm.define "alice" do |machine|
-    machine.vm.hostname = "alice"
-    machine.vm.network :private_network, ip: "192.168.122.111"
-    machine.vm.network :private_network, ip: "192.168.133.111"
-    machine.vm.network :private_network, ip: "192.168.144.111"
-  end
-
   config.vm.define "bob" do |machine|
     machine.vm.hostname = "bob"
     machine.vm.network :private_network, ip: "192.168.122.112"
@@ -98,24 +91,33 @@ Vagrant.configure("2") do |config|
     machine.vm.network :private_network, ip: "192.168.166.116"
   end
 
+  config.vm.define "alice" do |machine|
+    machine.vm.hostname = "alice"
+    machine.vm.network :private_network, ip: "192.168.122.111"
+    machine.vm.network :private_network, ip: "192.168.133.111"
+    machine.vm.network :private_network, ip: "192.168.144.111"
+
+    machine.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/site.yml"
+      ansible.limit = "all"
+      ansible.sudo = true
+      ansible.extra_vars = {
+        ansible_ssh_user: 'vagrant',
+        ceph_release: settings['ceph_release']
+      }
+      ansible.groups = {
+        "osds" => ["daisy", "eric", "frank"],
+        "mons" => ["daisy", "eric", "frank"],
+        "radosgws" => ["daisy"],
+        "cephclients" => ["alice", "bob"],
+        "s3clients" => ["alice", "bob"],
+      }
+    end
+  end
+
   # Add two more disks to each box
   config.vm.provider :libvirt do |libvirt|
   end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "ansible/site.yml"
-    ansible.sudo = true
-    ansible.extra_vars = { 
-      ansible_ssh_user: 'vagrant', 
-      ceph_release: settings['ceph_release']
-    }
-    ansible.groups = {
-      "osds" => ["daisy", "eric", "frank"],
-      "mons" => ["daisy", "eric", "frank"],
-      "radosgws" => ["daisy"],
-      "cephclients" => ["alice", "bob"],
-      "s3clients" => ["alice", "bob"],
-    }
-  end
 
 end
