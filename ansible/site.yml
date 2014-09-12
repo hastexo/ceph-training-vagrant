@@ -53,13 +53,12 @@
         name="redhat-lsb-core"
         state=present
 
-# The situation on RHEL/CentOS is pretty sticky. ceph-deploy requires
-# packages from EPEL, but EPEL also includes Ceph 0.81 which
+# The situation on RHEL/CentOS is pretty sticky. ceph and ceph-deploy
+# require packages from EPEL, but EPEL also includes Ceph 0.81 which
 # supersedes 0.80.x (firefly), and any "yum update" would clobber over
 # 0.80.x and install 0.81 instead. So, for the time being, chicken out
-# entirely and *only* install ceph (which doesn not require EPEL), and
-# leave it to the user to subsequently add the repo and install
-# ceph-deploy manually.
+# entirely and *only* add the repos and install NTP, and leave it to
+# the user to subsequently install ceph and ceph-deploy manually.
 - hosts:
   - CentOS
   - Red Hat Enterprise Linux
@@ -80,5 +79,3 @@
         state=present
       with_items:
         - ntp
-#        - ceph
-#        - ceph-deploy
