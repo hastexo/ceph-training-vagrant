@@ -1,0 +1,82 @@
+---
+# First, find out what distro our hosts are running
+- hosts: all
+  tasks:
+    - group_by: key={{ ansible_distribution }}
+
+- hosts:
+  - Debian
+  tasks:
+    # Debian doesn't install python-apt and python-pycurl by default;
+    # install it so we can use apt and apt_key later
+    - name: install Ansible requirements
+      shell: "apt-get -y install {{ item }}"
+      with_items:
+        - python-apt
+        - python-pycurl
+    # Debian doesn't install the lsb-release package by default;
+    # install it so we can use ansible_lsb.codename later
+    - name: Install lsb-release package
+      apt: >
+        name="lsb-release"
+        state=present
+
+- hosts:
+  - Ubuntu
+  - Debian
+  tasks:
+    - name: add ceph.com package signing key
+      apt_key: >
+        url="https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc"
+        state=present
+    - name: add ceph.com package repository
+      apt_repository: >
+        repo="deb http://ceph.com/debian-{{ ceph_release }}/ {{ ansible_lsb.codename }} main"
+        state=present
+    - name: update package cache
+      apt: update_cache=yes
+    - name: install packages
+      apt: >
+        name="{{ item }}"
+        state=present
+      with_items:
+        - ntp
+        - ceph
+        - ceph-deploy
+
+- hosts:
+  - CentOS
+  - Red Hat Enterprise Linux
+  tasks:
+    - name: install redhat-lsb-core package
+      yum: >
+        name="redhat-lsb-core"
+        state=present
+
+# The situation on RHEL/CentOS is pretty sticky. ceph-deploy requires
+# packages from EPEL, but EPEL also includes Ceph 0.81 which
+# supersedes 0.80.x (firefly), and any "yum update" would clobber over
+# 0.80.x and install 0.81 instead. So, for the time being, chicken out
+# entirely and *only* install ceph (which doesn not require EPEL), and
+# leave it to the user to subsequently add the repo and install
+# ceph-deploy manually.
+- hosts:
+  - CentOS
+  - Red Hat Enterprise Linux
+  tasks:
+    - name: add ceph.com package signing key
+      shell: >
+        rpm --import "https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc"
+    - name: add ceph.com package repository
+      shell: >
+        yum-config-manager --add-repo http://{{ item }}
+      with_items:
+        - "ceph.com/rpm-{{ ceph_release }}/rhel{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
+    - name: Install packages
+      yum: >
+        name="{{ item }}"
+        state=present
+      with_items:
+        - ntp
+        - ceph
+
