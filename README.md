@@ -33,10 +33,7 @@ ram: 1024
 
 ceph_release: firefly
 
-box: centos-7.0
-# box: centos-6.5
-# box: precise-server-cloudimg-amd64
-# box: debian-7.6.0-amd64
+box: centos-6.5
 
 box_url:  "https://vagrantcloud.com/chef/centos-6.5/version/1/provider/virtualbox.box"
 ```
@@ -81,4 +78,3 @@ or
 If you only want to bring up a single box or a few, you can do so with
 
 * `vagrant up [--provider=libvirt] {alice|bob|charlie|daisy|eric|frank}`
-
