@@ -114,10 +114,4 @@ Vagrant.configure("2") do |config|
       }
     end
   end
-
-  # Add two more disks to each box
-  config.vm.provider :libvirt do |libvirt|
-  end
-
-
 end
