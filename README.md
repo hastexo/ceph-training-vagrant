@@ -8,7 +8,7 @@ which supported packages are available from http://ceph.com, and
 pre-installs the `ceph` and `ceph-deploy` packages. From there, you
 can go ahead and deploy a virtualized Ceph mini-cluster.
 
-## Requirements
+## Software requirements
 
 You'll obviously need Vagrant. Since the Vagrant environment uses
 Ansible for provisioning, you'll need that too. And then there are a
@@ -21,6 +21,20 @@ few extra requirements in terms of Vagrant plugins.
 * Since most Vagrant boxes are provided for the default `virtualbox`
   provider, to convert them to a format suitable for libvirt/KVM
   you'll also need `vagrant-mutate`.
+
+
+## Network requirements
+
+The configuration assigns IP addresses in the IPv4 networks
+`192.168.122.0/24`, `192.168.133.0/24` and `192.168.144.0/24`. If
+those networks do not yet exist in your Libvirt configuration, you
+will need to define them. Configuration files for these networks are
+given in the `libvirt` directory; you will need to define and then
+start the networks with `virsh`:
+
+    virsh net-define libvirt/cluster.xml
+    virsh net-start cluster
+
 
 ## Configuration
 
