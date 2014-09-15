@@ -71,7 +71,7 @@
         - 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
         - 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc'
         - 'https://fedoraproject.org/static/0608B895.txt'
-    - name: add ceph.com package repository
+    - name: add package repositories
       shell: >
         yum-config-manager --add-repo http://{{ item }}
       with_items:
