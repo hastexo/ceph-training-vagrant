@@ -66,22 +66,22 @@ Vagrant.configure("2") do |config|
   config.vm.define "daisy" do |machine|
     machine.vm.hostname = "daisy"
     machine.vm.network :private_network, ip: "192.168.122.114"
-    machine.vm.network :private_network, ip: "192.168.155.114"
-    machine.vm.network :private_network, ip: "192.168.166.114"
+    machine.vm.network :private_network, ip: "192.168.133.114"
+    machine.vm.network :private_network, ip: "192.168.144.114"
   end
 
   config.vm.define "eric" do |machine|
     machine.vm.hostname = "eric"
     machine.vm.network :private_network, ip: "192.168.122.115"
-    machine.vm.network :private_network, ip: "192.168.155.115"
-    machine.vm.network :private_network, ip: "192.168.166.115"
+    machine.vm.network :private_network, ip: "192.168.133.115"
+    machine.vm.network :private_network, ip: "192.168.144.115"
   end
 
   config.vm.define "frank" do |machine|
     machine.vm.hostname = "frank"
     machine.vm.network :private_network, ip: "192.168.122.116"
-    machine.vm.network :private_network, ip: "192.168.155.116"
-    machine.vm.network :private_network, ip: "192.168.166.116"
+    machine.vm.network :private_network, ip: "192.168.133.116"
+    machine.vm.network :private_network, ip: "192.168.144.116"
   end
 
   config.vm.define "alice" do |machine|
