@@ -63,13 +63,6 @@ Vagrant.configure("2") do |config|
     machine.vm.network :private_network, ip: "192.168.144.113"
   end
 
-  config.vm.define "charlie" do |machine|
-    machine.vm.hostname = "charlie"
-    machine.vm.network :private_network, ip: "192.168.122.113"
-    machine.vm.network :private_network, ip: "192.168.133.113"
-    machine.vm.network :private_network, ip: "192.168.155.113"
-  end
-
   config.vm.define "daisy" do |machine|
     machine.vm.hostname = "daisy"
     machine.vm.network :private_network, ip: "192.168.122.114"
