@@ -43,6 +43,12 @@
         - ntp
         - ceph
         - ceph-deploy
+    - name: enable services
+      service: >-
+        name="{{ item }}"
+        state=started
+      with_items:
+        - ntp
 
 - hosts:
   - CentOS
@@ -84,3 +90,9 @@
         state=present
       with_items:
         - ntp
+    - name: enable services
+      service: >-
+        name="{{ item }}"
+        state=started
+      with_items:
+        - ntpd
