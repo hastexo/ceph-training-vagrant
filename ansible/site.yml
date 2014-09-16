@@ -59,12 +59,6 @@
         name="redhat-lsb-core"
         state=present
 
-# The situation on RHEL/CentOS is pretty sticky. ceph and ceph-deploy
-# require packages from EPEL, but EPEL also includes Ceph 0.81 which
-# supersedes 0.80.x (firefly), and any "yum update" would clobber over
-# 0.80.x and install 0.81 instead. So, for the time being, chicken out
-# entirely and *only* add the repos and install NTP, and leave it to
-# the user to subsequently install ceph and ceph-deploy manually.
 - hosts:
   - CentOS
   - Red Hat Enterprise Linux
@@ -75,21 +69,20 @@
         state=present
       with_items:
         - 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
-        - 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc'
-        - 'https://fedoraproject.org/static/0608B895.txt'
     - name: add package repositories
       shell: >
         yum-config-manager --add-repo http://{{ item }}
       with_items:
-        - "download.fedoraproject.org/pub/epel/{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
-        - "ceph.com/packages/ceph-deploy/rpm/el6/RPMS"
         - "ceph.com/rpm-{{ ceph_release }}/rhel{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
-    - name: Install packages
+        - "ceph.com/rpm-{{ ceph_release }}/rhel{{ ansible_lsb.major_release }}/noarch"
+    - name: install packages
       yum: >
         name="{{ item }}"
         state=present
       with_items:
         - ntp
+        - ceph
+        - ceph-deploy
     - name: enable services
       service: >-
         name="{{ item }}"
