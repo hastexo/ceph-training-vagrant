@@ -88,6 +88,14 @@
   - CentOS
   - Red Hat Enterprise Linux
   tasks:
+    - name: disable unnecessary yum plugins
+      ini_file: >
+        dest="/etc/yum/pluginconf.d/{{ item }}.conf"
+        section="main"
+        option="enabled"
+        value="0"
+      with_items:
+        - fastestmirror
     - name: install redhat-lsb-core package
       yum: >
         name="redhat-lsb-core"
@@ -104,12 +112,21 @@
         state=present
       with_items:
         - 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        - 'https://fedoraproject.org/static/0608B895.txt'
+        - 'https://fedoraproject.org/static/352C64E5.txt'
     - name: add package repositories
       shell: >
         yum-config-manager --add-repo http://{{ item }}
       with_items:
+        - "download.fedoraproject.org/pub/epel/{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
         - "ceph.com/rpm-{{ ceph_release }}/rhel{{ ansible_lsb.major_release }}/{{ ansible_architecture }}"
         - "ceph.com/rpm-{{ ceph_release }}/rhel{{ ansible_lsb.major_release }}/noarch"
+    - name: exclude Ceph packages from EPEL
+      ini_file: >
+        dest="/etc/yum.repos.d/download.fedoraproject.org_pub_epel_{{ ansible_lsb.major_release }}_{{ ansible_architecture }}.repo"
+        section="download.fedoraproject.org_pub_epel_{{ ansible_lsb.major_release }}_{{ ansible_architecture }}"
+        option="exclude"
+        value="ceph*"
     - name: install packages
       yum: >
         name="{{ item }}"
