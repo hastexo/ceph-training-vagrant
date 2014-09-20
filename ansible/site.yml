@@ -22,6 +22,18 @@
         state=present
 
 - hosts:
+  - "Ubuntu:&deploy"
+  - "Debian:&deploy"
+  tasks:
+    - name: "install APT cache package"
+      apt: >-
+        name="{{ item }}"
+        state=present
+      with_items:
+        - apt-cacher-ng
+        - apache2
+
+- hosts:
   - Ubuntu
   - Debian
   tasks:
@@ -51,6 +63,28 @@
         - ntp
 
 - hosts:
+  - "CentOS:&deploy"
+  - "Red Hat Enterprise Linux:&deploy"
+  tasks:
+    - name: "install yum cache packages"
+      yum: >
+        name="{{ item }}"
+        state=present
+      with_items:
+        - yum-plugin-local
+        - httpd
+    - name: share yum cache via HTTP
+      file: >
+        state=link
+        src="/var/lib/yum/plugins/local"
+        dest="/var/www/html/yum"
+    - name: enable httpd
+      service: >
+        name=httpd
+        state=started
+        
+
+- hosts:
   - CentOS
   - Red Hat Enterprise Linux
   tasks:
@@ -58,6 +92,7 @@
       yum: >
         name="redhat-lsb-core"
         state=present
+
 
 - hosts:
   - CentOS
