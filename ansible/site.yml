@@ -85,16 +85,6 @@
         state=present
       with_items:
         - yum-plugin-local
-        - httpd
-    - name: share yum cache via HTTP
-      file: >
-        state=link
-        src="/var/lib/yum/plugins/local"
-        dest="/var/www/html/yum"
-    - name: enable httpd
-      service: >
-        name=httpd
-        state=started
         
 
 - hosts:
