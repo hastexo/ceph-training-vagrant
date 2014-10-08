@@ -25,18 +25,29 @@
   - "Ubuntu:&deploy"
   - "Debian:&deploy"
   tasks:
-    - name: "install APT cache package"
+    - name: "install apt-cacher-ng package"
       apt: >-
         name="{{ item }}"
         state=present
       with_items:
         - apt-cacher-ng
-        - apache2
+    - name: "enable apt-cacher-ng service"
+      service: >-
+        name="{{ item }}"
+        state=started
+      with_items:
+        - apt-cacher-ng
 
 - hosts:
   - Ubuntu
   - Debian
   tasks:
+    - name: configure apt to use proxy
+      lineinfile: >
+        dest="/etc/apt/apt.conf.d/50proxy"
+        line='Acquire::http::Proxy "http://alice:3142/";'
+        state=present
+        create=yes
     - name: add ceph.com package signing key
       apt_key: >
         url="https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc"
@@ -45,8 +56,10 @@
       apt_repository: >
         repo="deb http://ceph.com/debian-{{ ceph_release }}/ {{ ansible_lsb.codename }} main"
         state=present
-    - name: update package cache
-      apt: update_cache=yes
+    - name: update package cache and upgrade packages
+      apt: >
+        update_cache=yes
+        upgrade=safe
     - name: install packages
       apt: >
         name="{{ item }}"
@@ -96,6 +109,71 @@
         value="0"
       with_items:
         - fastestmirror
+    - name: install NFS utilities
+      yum: >
+        name="{{ item }}"
+        state=present
+      with_items:
+        - nfs-utils
+        - portmap
+        - libselinux-python
+
+- hosts:
+  - "CentOS:&deploy"
+  - "Red Hat Enterprise Linux:&deploy"
+  tasks:
+    - name: create yum cache directory
+      file: >
+        path={{ item }}
+        state=directory
+      with_items:
+        - "/var/lib/yum/plugins/local"
+    - name: share yum cache via NFS
+      lineinfile: >
+        dest=/etc/exports
+        line="{{ item }} 0.0.0.0/0.0.0.0(rw,no_root_squash)"
+      with_items:
+        - "/var/lib/yum/plugins/local"
+      notify: "reload NFS"
+    - name: enable NFS server
+      service: >-
+        name=nfs
+        state=started
+  handlers:
+    - name: "reload NFS"
+      service: >        
+        name=nfs
+        state=restarted
+
+- hosts:
+  - "CentOS:!deploy"
+  - "Red Hat Enterprise Linux:!deploy"
+  tasks:
+    - name: mount local yum cache
+      mount: >
+        name={{ item }}
+        src="alice:{{ item }}"
+        fstype=nfs
+        opts=rw
+        state=mounted
+      with_items:
+        - "/var/lib/yum/plugins/local"
+
+- hosts:
+  - "CentOS"
+  - "Red Hat Enterprise Linux"
+  tasks:
+    - name: "install yum cache packages"
+      yum: >
+        name="{{ item }}"
+        state=present
+      with_items:
+        - yum-plugin-local
+
+- hosts:
+  - "CentOS"
+  - "Red Hat Enterprise Linux"
+  tasks:
     - name: install redhat-lsb-core package
       yum: >
         name="redhat-lsb-core"

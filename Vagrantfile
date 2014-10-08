@@ -100,11 +100,11 @@ Vagrant.configure("2") do |config|
       }
       ansible.groups = {
         "deploy" => ["alice"],
-        "osd" => ["daisy", "eric", "frank"],
-        "moni" => ["daisy", "eric", "frank"],
-        "radosgw" => ["daisy"],
-        "cephclient" => ["alice", "bob"],
-        "s3clienti" => ["alice", "bob"],
+        "osds" => ["daisy", "eric", "frank"],
+        "mons" => ["daisy", "eric", "frank"],
+        "radosgws" => ["daisy"],
+        "cephclients" => ["alice", "bob"],
+        "s3clients" => ["alice", "bob"],
       }
     end
   end
