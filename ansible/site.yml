@@ -45,21 +45,21 @@
     - name: configure apt to use proxy
       lineinfile: >
         dest="/etc/apt/apt.conf.d/50proxy"
-        line='Acquire::http::Proxy "http://alice:3142/";'
+        line='Acquire::http::Proxy "http://192.168.122.1:3142/";'
         state=present
         create=yes
     - name: add ceph.com package signing key
       apt_key: >
-        url="https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc"
+        url="http://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc"
+        id="17ED316D"
         state=present
     - name: add ceph.com package repository
       apt_repository: >
         repo="deb http://ceph.com/debian-{{ ceph_release }}/ {{ ansible_lsb.codename }} main"
         state=present
-    - name: update package cache and upgrade packages
+    - name: update package cache
       apt: >
         update_cache=yes
-        upgrade=safe
     - name: install packages
       apt: >
         name="{{ item }}"
