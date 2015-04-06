@@ -56,13 +56,6 @@ Vagrant.configure("2") do |config|
     domain.storage :file, :size => '20G'
   end
 
-  config.vm.define "bob" do |machine|
-    machine.vm.hostname = "bob"
-    machine.vm.network :private_network, ip: "192.168.122.112"
-    machine.vm.network :private_network, ip: "192.168.133.113"
-    machine.vm.network :private_network, ip: "192.168.144.113"
-  end
-
   config.vm.define "daisy" do |machine|
     machine.vm.hostname = "daisy"
     machine.vm.network :private_network, ip: "192.168.122.114"
