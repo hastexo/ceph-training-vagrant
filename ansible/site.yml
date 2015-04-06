@@ -123,7 +123,18 @@
         dest="/etc/yum.repos.d/download.fedoraproject.org_pub_epel_{{ ansible_lsb.major_release }}_{{ ansible_architecture }}.repo"
         section="download.fedoraproject.org_pub_epel_{{ ansible_lsb.major_release }}_{{ ansible_architecture }}"
         option="exclude"
-        value="ceph*"
+        value="ceph* python-rados* python-rbd* python-cephfs* python-ceph-compat* libcephfs* librados2* librbd1*"
+    - name: exclude Ceph packages from CentOS base
+      ini_file: >
+        dest="/etc/yum.repos.d/CentOS-Base.repo"
+        section="{{ item }}"
+        option="exclude"
+        value="ceph* python-rados* python-rbd* python-cephfs* python-ceph-compat* libcephfs* librados2* librbd1*"
+      with_items:
+        - base
+        - updates
+        - extras
+        - centosplus
     - name: install packages
       yum: >
         name="{{ item }}"
